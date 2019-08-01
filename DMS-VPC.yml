@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  BasicReplicationInstance:
+    Type: "AWS::DMS::ReplicationInstance"
+    DependsOn: SubnetCreation
+    Properties:
+      ReplicationInstanceIdentifier: com-ebi-nx-dms-instance
+      ReplicationInstanceClass: dms.t2.medium
+      PubliclyAccessible: false
+      ReplicationSubnetGroupIdentifier: com-ebi-nx-dms-subnet
+      VpcSecurityGroupIds:
+        - sg-075080577ca65c181
+  SubnetCreation:
+    Type: AWS::DMS::ReplicationSubnetGroup
+    Properties:
+      ReplicationSubnetGroupDescription: subnet group for DMS with two SubnetIds
+      ReplicationSubnetGroupIdentifier: com-ebi-nx-dms-subnet
+      SubnetIds:
+        - subnet-08e3879fc92cdfe0f
+        - subnet-0a2b78806eeae0be3
+  SourceEndpoint:
+    Type: "AWS::DMS::Endpoint"
+    Properties:
+      EndpointIdentifier: com-ebi-nxstg-endpoint
+      EndpointType: source
+      EngineName: mysql
+      Password: 123
+      Port: 3306
+      ServerName: nxstg-wc-db06d.sys.comcast.net
+      Username: nexus
+  TargetEndpoint:
+    Type: "AWS::DMS::Endpoint"
+    Properties:
+      EndpointIdentifier: com-ebi-nx-aurora-endpoint
+      EndpointType: target
+      EngineName: aurora
+      Password: admin123
+      Port: 3306
+      ServerName: application-autoscaling-5596e26a-f9e6-4981-8ace-35f2c49ac0da.cyep9qrlgctz.us-east-1.rds.amazonaws.com
+      Username: admin
